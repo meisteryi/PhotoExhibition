@@ -1,6 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Camera, MapPin, Sliders, Heart } from 'lucide-react';
 import HeartButton from './HeartButton';
+
+// Custom requestAnimationFrame smooth scroll helper with easeInOutCubic easing
+const smoothScrollTo = (element, target, duration, onComplete) => {
+  const start = element.scrollTop;
+  const change = target - start;
+  let startTime = null;
+
+  const animateScroll = (currentTime) => {
+    if (!startTime) startTime = currentTime;
+    const timeElapsed = currentTime - startTime;
+
+    // easeInOutCubic calculation
+    const t = timeElapsed / (duration / 2);
+    let val = 0;
+    if (t < 1) {
+      val = (change / 2) * t * t * t + start;
+    } else {
+      const u = t - 2;
+      val = (change / 2) * (u * u * u + 2) + start;
+    }
+
+    element.scrollTop = val;
+
+    if (timeElapsed < duration) {
+      requestAnimationFrame(animateScroll);
+    } else {
+      element.scrollTop = target;
+      if (onComplete) onComplete();
+    }
+  };
+
+  requestAnimationFrame(animateScroll);
+};
 
 export default function MonographView({ 
   photos, 
@@ -12,6 +45,31 @@ export default function MonographView({
   const [doubleTapStates, setDoubleTapStates] = useState({}); // { photoId: boolean }
   const [activeOverlayId, setActiveOverlayId] = useState(null); // Toggled overlay for mobile/touch
   const [lastTap, setLastTap] = useState(0);
+  const containerRef = useRef(null);
+
+  const handleScrollNav = (direction) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const slideHeight = container.clientHeight;
+    const currentScroll = Math.round(container.scrollTop);
+
+    let targetScroll;
+    if (direction === 'up') {
+      targetScroll = Math.max(0, currentScroll - slideHeight);
+    } else {
+      targetScroll = Math.min(container.scrollHeight - slideHeight, currentScroll + slideHeight);
+    }
+
+    // Disable scroll-snap during animation to prevent browser scroll friction conflicts
+    container.style.scrollSnapType = 'none';
+
+    // Glide smoothly over 1.2 seconds (easeInOutCubic)
+    smoothScrollTo(container, targetScroll, 1200, () => {
+      // Re-enable scroll-snap once in position to maintain native snapping on manual scroll
+      container.style.scrollSnapType = 'y mandatory';
+    });
+  };
 
   // Lock body scroll to force scrolling in the snap container
   useEffect(() => {
@@ -62,23 +120,7 @@ export default function MonographView({
       {/* Subtle fixed back arrow button */}
       <button
         onClick={onBackToArchive}
-        style={{
-          position: 'fixed',
-          top: '2rem',
-          left: '2rem',
-          zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--text-muted)',
-          background: 'transparent',
-          border: 'none',
-          padding: '0.5rem',
-          cursor: 'pointer',
-          transition: 'var(--transition-fast)'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+        className="back-arrow-btn"
         title="아카이브로 돌아가기"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
@@ -88,7 +130,7 @@ export default function MonographView({
       </button>
 
       {/* Full-Screen Slides Container */}
-      <div className="slides-container">
+      <div ref={containerRef} className="slides-container">
         {photos.map((photo, index) => {
           const isLiked = likedPhotos.includes(photo.id);
           const showBigHeart = doubleTapStates[photo.id];
@@ -223,8 +265,104 @@ export default function MonographView({
         })}
       </div>
 
+      {/* Fixed up/down navigation buttons (PC/Landscape only) */}
+      <div className="navigation-controls" style={{
+        position: 'fixed',
+        bottom: '2.5rem',
+        right: '2.5rem',
+        zIndex: 100,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.75rem'
+      }}>
+        <button
+          onClick={() => handleScrollNav('up')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-secondary)',
+            background: 'rgba(255, 255, 255, 0.4)',
+            border: '1px solid rgba(0, 0, 0, 0.05)',
+            borderRadius: '50%',
+            width: '42px',
+            height: '42px',
+            cursor: 'pointer',
+            transition: 'var(--transition-fast)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--text-primary)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)';
+            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--text-secondary)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.4)';
+            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
+          }}
+          title="이전 사진"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </button>
+        <button
+          onClick={() => handleScrollNav('down')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-secondary)',
+            background: 'rgba(255, 255, 255, 0.4)',
+            border: '1px solid rgba(0, 0, 0, 0.05)',
+            borderRadius: '50%',
+            width: '42px',
+            height: '42px',
+            cursor: 'pointer',
+            transition: 'var(--transition-fast)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--text-primary)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)';
+            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--text-secondary)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.4)';
+            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
+          }}
+          title="다음 사진"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      </div>
+
       {/* Responsive layout CSS overrides specifically for PC/Landscape centered galleries */}
       <style>{`
+        .back-arrow-btn {
+          position: fixed;
+          top: 2rem;
+          left: 2rem;
+          z-index: 150;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--text-muted);
+          background: transparent;
+          border: none;
+          padding: 0.5rem;
+          cursor: pointer;
+          transition: var(--transition-fast);
+        }
+
+        .back-arrow-btn:hover {
+          color: var(--text-secondary);
+        }
+
         .slides-container {
           display: flex;
           flex-direction: column;
@@ -307,6 +445,26 @@ export default function MonographView({
         }
 
         @media (max-width: 768px) {
+          .back-arrow-btn {
+            top: 1.5rem;
+            left: 1.5rem;
+            width: auto;
+            height: auto;
+            border-radius: 0;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            color: var(--text-secondary); /* Elegant charcoal line arrow for contrast */
+            padding: 0.5rem;
+            box-shadow: none;
+            z-index: 999;
+          }
+
+          .navigation-controls {
+            display: none !important;
+          }
+
           .slides-container {
             height: 100vh; /* Full viewport height on mobile */
           }
@@ -317,18 +475,21 @@ export default function MonographView({
           }
 
           .photo-frame {
-            width: 100vw; /* Take full width on mobile screen */
+            width: 100vw;
             height: 100%;
+            overflow: visible; /* Prevents rotated image corners from being cropped */
           }
 
           .exhibition-image {
+            max-width: 90vw; /* Safety horizontal margins to prevent screen-edge cropping when tilted */
             max-height: 65vh;
-            border-radius: 0;
-            width: 100%;
+            object-fit: contain;
+            border-radius: 2px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
           }
 
           .editorial-overlay {
-            width: 92%;
+            width: 90vw;
             bottom: 1.5rem;
           }
         }

@@ -105,13 +105,14 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(28, 25, 23, 0.4)',
+        backgroundColor: 'rgba(28, 25, 23, 0.45)',
         backdropFilter: 'blur(8px)',
         zIndex: 1000,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start', // Top align if contents exceed viewport
         justifyContent: 'center',
-        padding: '1rem'
+        overflowY: 'auto', // Scrollbar on overlay for natural modal card scrolling
+        padding: '3rem 1rem' // Generous padding to prevent clipping edges
       }}
       onClick={onClose}
     >
@@ -120,11 +121,11 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
         style={{
           width: '100%',
           maxWidth: '650px',
-          maxHeight: '90vh',
           borderRadius: '12px',
-          overflowY: 'auto',
-          padding: '2rem',
-          position: 'relative'
+          padding: '2.5rem',
+          position: 'relative',
+          margin: 'auto 0', // Modern flex vertical-centering that respects top boundary
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)'
         }}
         onClick={(e) => e.stopPropagation()}
       >

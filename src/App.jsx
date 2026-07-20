@@ -3,6 +3,7 @@ import Header from './components/Header';
 import ArchiveGrid from './components/ArchiveGrid';
 import MonographView from './components/MonographView';
 import AdminPanel from './components/AdminPanel';
+import DetailModal from './components/DetailModal';
 import { defaultPhotos } from './data/defaultPhotos';
 
 export default function App() {
@@ -84,7 +85,6 @@ export default function App() {
 
   const handleSelectPhoto = (photoId) => {
     setSelectedPhotoId(photoId);
-    setViewMode('exhibition');
   };
 
   const handleBackToArchive = () => {
@@ -121,6 +121,16 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Detail Modal (Archive Pop-up Detail View) */}
+      {viewMode === 'archive' && selectedPhotoId && (
+        <DetailModal
+          photo={photos.find(p => p.id === selectedPhotoId)}
+          likedPhotos={likedPhotos}
+          onLike={handleLike}
+          onClose={() => setSelectedPhotoId(null)}
+        />
+      )}
 
       {/* Admin Panel Modal */}
       <AdminPanel

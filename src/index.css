@@ -24,6 +24,13 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera globally */
+*::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -34,9 +41,6 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Prevent flickering on state changes / GPU acceleration */
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
 }
 
 button {
