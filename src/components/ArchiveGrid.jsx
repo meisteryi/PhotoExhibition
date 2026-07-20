@@ -67,7 +67,7 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
 
       {/* Masonry Grid Layout */}
       {filteredPhotos.length === 0 ? (
-        <div style={{
+        <div key={activeCategory} className="category-fade-in" style={{
           textAlign: 'center',
           padding: '8rem 0',
           color: 'var(--text-secondary)',
@@ -78,7 +78,7 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
           등록된 사진이 없습니다.
         </div>
       ) : (
-        <div className="masonry-grid">
+        <div key={activeCategory} className="masonry-grid category-fade-in">
           {filteredPhotos.map((photo) => {
             const isLiked = likedPhotos.includes(photo.id);
             return (
@@ -103,7 +103,7 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
                   style={{
                     width: '100%',
                     display: 'block',
-                    transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                    transition: 'transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
                     transform: 'translate3d(0,0,0)',
                     backfaceVisibility: 'hidden'
                   }}
@@ -125,7 +125,7 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
                     justifyContent: 'flex-end',
                     padding: '1.5rem',
                     opacity: 0,
-                    transition: 'opacity 0.4s ease'
+                    transition: 'opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -181,11 +181,28 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
           column-gap: 2rem;
         }
 
+        @keyframes categoryFade {
+          from {
+            opacity: 0;
+            filter: blur(4px);
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+          }
+        }
+
+        .category-fade-in {
+          animation: categoryFade 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         .masonry-item {
           break-inside: avoid;
           margin-bottom: 2rem;
           transform: translateY(0);
-          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease;
+          transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 1.5s ease;
         }
 
         .grid-image {

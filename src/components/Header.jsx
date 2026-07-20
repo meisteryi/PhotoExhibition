@@ -1,7 +1,7 @@
 import React from 'react';
-import { Camera, Grid, BookOpen, Settings } from 'lucide-react';
+import { Camera, Grid, BookOpen } from 'lucide-react';
 
-export default function Header({ viewMode, setViewMode, onOpenAdmin }) {
+export default function Header({ viewMode, setViewMode, onOpenUpload, onOpenManage }) {
   return (
     <header className="glass-panel" style={{
       position: 'sticky',
@@ -123,7 +123,7 @@ export default function Header({ viewMode, setViewMode, onOpenAdmin }) {
 
           {/* Admin Upload Trigger */}
           <button
-            onClick={onOpenAdmin}
+            onClick={onOpenUpload}
             style={{
               padding: '0.5rem',
               borderRadius: '50%',
@@ -145,9 +145,52 @@ export default function Header({ viewMode, setViewMode, onOpenAdmin }) {
               e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
               e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
             }}
-            title="사진 등록"
+            title="기록 업로드"
           >
-            <Settings size={16} />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+          </button>
+
+          {/* Admin Manage Trigger */}
+          <button
+            onClick={onOpenManage}
+            style={{
+              padding: '0.5rem',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              background: 'rgba(255,255,255,0.02)',
+              color: 'var(--text-secondary)',
+              transition: 'var(--transition-fast)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+            }}
+            title="기록 및 카테고리 관리"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14" />
+              <line x1="4" y1="10" x2="4" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12" y2="3" />
+              <line x1="20" y1="21" x2="20" y2="16" />
+              <line x1="20" y1="12" x2="20" y2="3" />
+              <line x1="1" y1="14" x2="7" y2="14" />
+              <line x1="9" y1="8" x2="15" y2="8" />
+              <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
           </button>
         </div>
       </div>

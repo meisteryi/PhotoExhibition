@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import ArchiveGrid from './components/ArchiveGrid';
 import MonographView from './components/MonographView';
-import AdminPanel from './components/AdminPanel';
+import UploadPanel from './components/UploadPanel';
+import ManagerPanel from './components/ManagerPanel';
 import DetailModal from './components/DetailModal';
 import { defaultPhotos } from './data/defaultPhotos';
 
@@ -11,7 +12,8 @@ export default function App() {
   const [likedPhotos, setLikedPhotos] = useState([]);
   const [viewMode, setViewMode] = useState('archive'); // 'archive' or 'exhibition'
   const [selectedPhotoId, setSelectedPhotoId] = useState(null);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isManagerOpen, setIsManagerOpen] = useState(false);
 
   // Initialize data from LocalStorage or Default Mock Data
   useEffect(() => {
@@ -83,6 +85,31 @@ export default function App() {
     localStorage.setItem('photo_exhibition_photos', JSON.stringify(updatedPhotos));
   };
 
+  const handleDeletePhoto = (photoId) => {
+    if (window.confirm("정말 이 사진을 삭제하시겠습니까?")) {
+      const updatedPhotos = photos.filter(p => p.id !== photoId);
+      setPhotos(updatedPhotos);
+      localStorage.setItem('photo_exhibition_photos', JSON.stringify(updatedPhotos));
+    }
+  };
+
+  const handleRenameCategory = (oldName, newName) => {
+    const updatedPhotos = photos.map(p => {
+      if (p.series === oldName) {
+        return { ...p, series: newName || '미분류' };
+      }
+      return p;
+    });
+    setPhotos(updatedPhotos);
+    localStorage.setItem('photo_exhibition_photos', JSON.stringify(updatedPhotos));
+  };
+
+  const handleDeleteCategory = (categoryName) => {
+    if (window.confirm(`'${categoryName}' 카테고리를 삭제하시겠습니까? 소속된 사진들은 '미분류'로 이동합니다.`)) {
+      handleRenameCategory(categoryName, '미분류');
+    }
+  };
+
   const handleSelectPhoto = (photoId) => {
     setSelectedPhotoId(photoId);
   };
@@ -99,7 +126,8 @@ export default function App() {
         <Header
           viewMode={viewMode}
           setViewMode={setViewMode}
-          onOpenAdmin={() => setIsAdminOpen(true)}
+          onOpenUpload={() => setIsUploadOpen(true)}
+          onOpenManage={() => setIsManagerOpen(true)}
         />
       )}
 
@@ -132,12 +160,22 @@ export default function App() {
         />
       )}
 
-      {/* Admin Panel Modal */}
-      <AdminPanel
-        isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
+      {/* Upload Photo Modal */}
+      <UploadPanel
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
         onUpload={handleUpload}
         existingSeries={['전체', ...new Set(photos.map(p => p.series))]}
+      />
+
+      {/* Category & Content Manager Modal */}
+      <ManagerPanel
+        isOpen={isManagerOpen}
+        onClose={() => setIsManagerOpen(false)}
+        photos={photos}
+        onDeletePhoto={handleDeletePhoto}
+        onRenameCategory={handleRenameCategory}
+        onDeleteCategory={handleDeleteCategory}
       />
 
       {/* Footer */}

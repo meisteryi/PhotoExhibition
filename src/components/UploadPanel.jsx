@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, Camera, Sliders, MapPin } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 
-export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries = [] }) {
+export default function UploadPanel({ isOpen, onClose, onUpload, existingSeries = [] }) {
   const [title, setTitle] = useState('');
   const [series, setSeries] = useState(existingSeries[1] || '');
   const [newSeriesName, setNewSeriesName] = useState('');
@@ -38,6 +38,18 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
+
+  // Lock scroll on background when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -109,10 +121,10 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
         backdropFilter: 'blur(8px)',
         zIndex: 1000,
         display: 'flex',
-        alignItems: 'flex-start', // Top align if contents exceed viewport
+        alignItems: 'flex-start',
         justifyContent: 'center',
-        overflowY: 'auto', // Scrollbar on overlay for natural modal card scrolling
-        padding: '3rem 1rem' // Generous padding to prevent clipping edges
+        overflowY: 'auto',
+        padding: '3rem 1rem'
       }}
       onClick={onClose}
     >
@@ -124,7 +136,7 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
           borderRadius: '12px',
           padding: '2.5rem',
           position: 'relative',
-          margin: 'auto 0', // Modern flex vertical-centering that respects top boundary
+          margin: 'auto 0',
           boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)'
         }}
         onClick={(e) => e.stopPropagation()}
@@ -181,23 +193,24 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
                 />
                 <button
                   type="button"
-                  onClick={() => {
-                    setImageFile(null);
-                    setImagePreview('');
-                  }}
+                  onClick={() => { setImageFile(null); setImagePreview(''); }}
                   style={{
                     position: 'absolute',
                     top: '0.5rem',
                     right: '0.5rem',
                     background: 'rgba(0,0,0,0.6)',
+                    color: 'white',
+                    border: 'none',
                     borderRadius: '50%',
-                    padding: '0.3rem',
+                    width: '24px',
+                    height: '24px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    cursor: 'pointer'
                   }}
                 >
-                  <X size={14} />
+                  <X size={12} />
                 </button>
               </div>
             ) : (
@@ -206,30 +219,30 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                aspectRatio: '16/9',
-                border: '1px dashed rgba(0, 0, 0, 0.15)',
+                border: '1px dashed var(--text-muted)',
                 borderRadius: '6px',
+                padding: '3rem 1rem',
                 cursor: 'pointer',
-                background: 'rgba(0,0,0,0.01)',
-                transition: 'var(--transition-fast)'
+                background: 'rgba(255, 255, 255, 0.2)',
+                transition: 'var(--transition-fast)',
+                gap: '0.5rem'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--accent)';
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.03)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.borderColor = 'var(--text-secondary)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.15)';
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.01)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.borderColor = 'var(--text-muted)';
               }}
               >
-                <Upload size={24} style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }} />
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>사진 파일을 선택하세요</span>
+                <Upload size={24} style={{ color: 'var(--text-secondary)' }} />
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>사진 파일 업로드 (.jpg, .png 등)</span>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
                   style={{ display: 'none' }}
-                  required
                 />
               </label>
             )}
@@ -237,165 +250,173 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
 
           {/* Title input */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label htmlFor="admin-title" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              제목 *
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+              기록 제목 *
             </label>
             <input
-              id="admin-title"
               type="text"
               className="glass-input"
+              style={{ width: '100%', fontSize: '0.85rem' }}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="사진의 제목을 입력해 주세요"
+              placeholder="사진의 제목을 적어주세요"
               required
             />
           </div>
 
-          {/* Category Series Selection */}
+          {/* Category Select / Add */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label htmlFor="admin-series" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
               시리즈 (카테고리) *
             </label>
+
             {!isAddingNewSeries ? (
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                 <select
-                  id="admin-series"
-                  className="glass-input"
-                  style={{ flex: 1 }}
                   value={series}
                   onChange={(e) => setSeries(e.target.value)}
+                  className="glass-input"
+                  style={{ flex: 1, fontSize: '0.85rem' }}
                 >
-                  {existingSeries.filter(s => s !== '전체').map((s) => (
-                    <option key={s} value={s} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
-                      {s}
-                    </option>
+                  <option value="" disabled>시리즈 선택</option>
+                  {existingSeries.filter(s => s !== '전체').map(s => (
+                    <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
                 <button
                   type="button"
                   onClick={() => setIsAddingNewSeries(true)}
                   style={{
-                    padding: '0 1rem',
-                    borderRadius: '4px',
-                    border: '1px solid rgba(0, 0, 0, 0.08)',
-                    fontSize: '0.8rem',
-                    color: 'var(--text-secondary)',
-                    background: 'rgba(0, 0, 0, 0.02)',
-                    transition: 'var(--transition-fast)'
+                    fontSize: '0.75rem',
+                    color: 'var(--accent)',
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.15)'}
-                  onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.08)'}
                 >
-                  새 시리즈 생성
+                  + 새 시리즈 만들기
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                 <input
                   type="text"
                   className="glass-input"
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, fontSize: '0.85rem' }}
                   value={newSeriesName}
                   onChange={(e) => setNewSeriesName(e.target.value)}
-                  placeholder="새 시리즈명을 입력해 주세요"
-                  required
+                  placeholder="새 시리즈 이름 입력"
                 />
                 <button
                   type="button"
                   onClick={() => setIsAddingNewSeries(false)}
                   style={{
-                    padding: '0 1rem',
-                    borderRadius: '4px',
-                    border: '1px solid rgba(0, 0, 0, 0.08)',
-                    fontSize: '0.8rem',
+                    fontSize: '0.75rem',
                     color: 'var(--text-secondary)',
-                    background: 'rgba(0, 0, 0, 0.02)'
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  취소
+                  기존 선택
                 </button>
               </div>
             )}
           </div>
 
-          {/* Story Textarea */}
+          {/* Date Picker */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label htmlFor="admin-story" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              기록할 이야기 *
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+              날짜 *
             </label>
-            <textarea
-              id="admin-story"
+            <input
+              type="text"
               className="glass-input"
-              style={{ minHeight: '120px', resize: 'vertical', fontFamily: 'var(--font-serif)', fontSize: '1rem' }}
-              value={story}
-              onChange={(e) => setStory(e.target.value)}
-              placeholder="사진 뒤에 숨겨진 이야기나 상념을 기록해 주세요"
+              style={{ width: '100%', fontSize: '0.85rem' }}
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              placeholder="예: 2026. 07. 20"
               required
             />
           </div>
 
-          {/* EXIF Metadata Row */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              촬영 정보 (EXIF)
+          {/* Story TextArea */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+              에세이 / 스토리 *
+            </label>
+            <textarea
+              className="glass-input"
+              rows={4}
+              style={{ width: '100%', fontSize: '0.85rem', lineHeight: '1.6', fontFamily: 'inherit' }}
+              value={story}
+              onChange={(e) => setStory(e.target.value)}
+              placeholder="사진 뒤에 깃든 에세이나 이야기를 들려주세요"
+              required
+            />
+          </div>
+
+          {/* EXIF Metadata Slots */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '1rem' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.25rem' }}>
+              카메라 촬영 정보 (EXIF - 선택)
             </span>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '0.75rem',
-              padding: '1rem',
-              borderRadius: '6px',
-              background: 'rgba(0, 0, 0, 0.01)',
-              border: '1px solid rgba(0, 0, 0, 0.05)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Camera size={14} style={{ color: 'var(--text-muted)' }} />
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Camera Body</span>
                 <input
                   type="text"
                   className="glass-input"
                   style={{ width: '100%', fontSize: '0.75rem', padding: '4px 8px' }}
                   value={camera}
                   onChange={(e) => setCamera(e.target.value)}
-                  placeholder="바디 (예: Fujifilm X-T5)"
+                  placeholder="예: Fujifilm X-T5"
                 />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Sliders size={14} style={{ color: 'var(--text-muted)' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Lens</span>
                 <input
                   type="text"
                   className="glass-input"
                   style={{ width: '100%', fontSize: '0.75rem', padding: '4px 8px' }}
                   value={lens}
                   onChange={(e) => setLens(e.target.value)}
-                  placeholder="렌즈 (예: XF 35mm F1.4 R)"
+                  placeholder="예: XF 35mm F1.4"
                 />
               </div>
-              <input
-                type="text"
-                className="glass-input"
-                style={{ fontSize: '0.75rem', padding: '4px 8px' }}
-                value={aperture}
-                onChange={(e) => setAperture(e.target.value)}
-                placeholder="조리개 (예: f/1.4)"
-              />
-              <input
-                type="text"
-                className="glass-input"
-                style={{ fontSize: '0.75rem', padding: '4px 8px' }}
-                value={shutter}
-                onChange={(e) => setShutter(e.target.value)}
-                placeholder="셔터 스피드 (예: 1/250s)"
-              />
-              <input
-                type="text"
-                className="glass-input"
-                style={{ fontSize: '0.75rem', padding: '4px 8px' }}
-                value={iso}
-                onChange={(e) => setIso(e.target.value)}
-                placeholder="ISO (예: ISO 100)"
-              />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <MapPin size={14} style={{ color: 'var(--text-muted)' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Aperture</span>
+                <input
+                  type="text"
+                  className="glass-input"
+                  style={{ width: '100%', fontSize: '0.75rem', padding: '4px 8px' }}
+                  value={aperture}
+                  onChange={(e) => setAperture(e.target.value)}
+                  placeholder="예: f/1.4"
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Shutter Speed</span>
+                <input
+                  type="text"
+                  className="glass-input"
+                  style={{ width: '100%', fontSize: '0.75rem', padding: '4px 8px' }}
+                  value={shutter}
+                  onChange={(e) => setShutter(e.target.value)}
+                  placeholder="예: 1/250s"
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>ISO</span>
+                <input
+                  type="text"
+                  className="glass-input"
+                  style={{ width: '100%', fontSize: '0.75rem', padding: '4px 8px' }}
+                  value={iso}
+                  onChange={(e) => setIso(e.target.value)}
+                  placeholder="예: ISO 400"
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Location</span>
                 <input
                   type="text"
                   className="glass-input"

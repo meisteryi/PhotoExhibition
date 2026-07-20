@@ -64,8 +64,8 @@ export default function MonographView({
     // Disable scroll-snap during animation to prevent browser scroll friction conflicts
     container.style.scrollSnapType = 'none';
 
-    // Glide smoothly over 1.2 seconds (easeInOutCubic)
-    smoothScrollTo(container, targetScroll, 1200, () => {
+    // Glide smoothly over 1.5 seconds (easeInOutCubic)
+    smoothScrollTo(container, targetScroll, 1500, () => {
       // Re-enable scroll-snap once in position to maintain native snapping on manual scroll
       container.style.scrollSnapType = 'y mandatory';
     });
@@ -401,7 +401,7 @@ export default function MonographView({
           border-radius: 4px;
           overflow: hidden;
           cursor: pointer;
-          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .exhibition-image {
@@ -410,7 +410,7 @@ export default function MonographView({
           object-fit: contain;
           border-radius: 4px;
           box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
           transform: translate3d(0, 0, 0);
           backface-visibility: hidden;
         }
@@ -431,7 +431,7 @@ export default function MonographView({
           padding: 1.25rem;
           opacity: 0;
           pointer-events: none;
-          transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
           box-shadow: 0 12px 30px rgba(0,0,0,0.06);
           z-index: 15;
         }
