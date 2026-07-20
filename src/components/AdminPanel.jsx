@@ -105,7 +105,7 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(4, 6, 11, 0.85)',
+        backgroundColor: 'rgba(28, 25, 23, 0.4)',
         backdropFilter: 'blur(8px)',
         zIndex: 1000,
         display: 'flex',
@@ -150,7 +150,7 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
           fontSize: '1.5rem',
           fontWeight: 400,
           marginBottom: '1.5rem',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          borderBottom: '1px solid rgba(0,0,0,0.06)',
           paddingBottom: '0.5rem'
         }}>
           새로운 기록 올리기
@@ -169,7 +169,7 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
                 position: 'relative',
                 borderRadius: '6px',
                 overflow: 'hidden',
-                border: '1px solid rgba(255,255,255,0.08)',
+                border: '1px solid rgba(0,0,0,0.08)',
                 aspectRatio: '16/9',
                 background: 'black'
               }}>
@@ -206,19 +206,19 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
                 alignItems: 'center',
                 justifyContent: 'center',
                 aspectRatio: '16/9',
-                border: '1px dashed rgba(255,255,255,0.15)',
+                border: '1px dashed rgba(0, 0, 0, 0.15)',
                 borderRadius: '6px',
                 cursor: 'pointer',
-                background: 'rgba(255,255,255,0.01)',
+                background: 'rgba(0,0,0,0.01)',
                 transition: 'var(--transition-fast)'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = 'var(--accent)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.03)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.01)';
+                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.15)';
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.01)';
               }}
               >
                 <Upload size={24} style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }} />
@@ -276,14 +276,14 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
                   style={{
                     padding: '0 1rem',
                     borderRadius: '4px',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(0, 0, 0, 0.08)',
                     fontSize: '0.8rem',
                     color: 'var(--text-secondary)',
-                    background: 'rgba(255,255,255,0.02)',
+                    background: 'rgba(0, 0, 0, 0.02)',
                     transition: 'var(--transition-fast)'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'}
-                  onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
+                  onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.15)'}
+                  onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.08)'}
                 >
                   새 시리즈 생성
                 </button>
@@ -305,10 +305,10 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
                   style={{
                     padding: '0 1rem',
                     borderRadius: '4px',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(0, 0, 0, 0.08)',
                     fontSize: '0.8rem',
                     color: 'var(--text-secondary)',
-                    background: 'rgba(255,255,255,0.02)'
+                    background: 'rgba(0, 0, 0, 0.02)'
                   }}
                 >
                   취소
@@ -344,8 +344,8 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
               gap: '0.75rem',
               padding: '1rem',
               borderRadius: '6px',
-              background: 'rgba(255,255,255,0.01)',
-              border: '1px solid rgba(255,255,255,0.04)'
+              background: 'rgba(0, 0, 0, 0.01)',
+              border: '1px solid rgba(0, 0, 0, 0.05)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Camera size={14} style={{ color: 'var(--text-muted)' }} />
@@ -413,7 +413,7 @@ export default function AdminPanel({ isOpen, onClose, onUpload, existingSeries =
             justifyContent: 'flex-end',
             gap: '1rem',
             marginTop: '0.5rem',
-            borderTop: '1px solid rgba(255,255,255,0.05)',
+            borderTop: '1px solid rgba(0, 0, 0, 0.06)',
             paddingTop: '1rem'
           }}>
             <button

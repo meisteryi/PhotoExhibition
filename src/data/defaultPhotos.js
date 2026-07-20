@@ -3,7 +3,7 @@ export const defaultPhotos = [
     id: "photo-1",
     title: "오후 3시의 잔상",
     series: "시선이 머무는 온도",
-    url: "https://images.unsplash.com/photo-1472214222541-d510753a4707?auto=format&fit=crop&q=80&w=1200",
+    url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1200",
     story: `조용한 오후의 볕이 베란다 틈 사이로 부드럽게 스며들던 시간. 
 어디선가 불어오는 미지근한 바람이 커튼을 스치자 방 안에는 따뜻한 빛의 결이 가득 들어찼습니다. 
 익숙하고 지루했던 일상의 모퉁이가 빛 하나로 완전히 다른 옷을 입는 순간이었습니다.

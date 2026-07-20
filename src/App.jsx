@@ -16,7 +16,19 @@ export default function App() {
   useEffect(() => {
     const savedPhotos = localStorage.getItem('photo_exhibition_photos');
     if (savedPhotos) {
-      setPhotos(JSON.parse(savedPhotos));
+      let parsed = JSON.parse(savedPhotos);
+      // Hotfix: Update photo-1's URL if it's the old broken Unsplash link
+      parsed = parsed.map(p => {
+        if (p.id === 'photo-1' && p.url.includes('1472214222541-d510753a4707')) {
+          return {
+            ...p,
+            url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1200"
+          };
+        }
+        return p;
+      });
+      setPhotos(parsed);
+      localStorage.setItem('photo_exhibition_photos', JSON.stringify(parsed));
     } else {
       setPhotos(defaultPhotos);
       localStorage.setItem('photo_exhibition_photos', JSON.stringify(defaultPhotos));
@@ -83,11 +95,13 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Site Header */}
-      <Header
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        onOpenAdmin={() => setIsAdminOpen(true)}
-      />
+      {viewMode === 'archive' && (
+        <Header
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          onOpenAdmin={() => setIsAdminOpen(true)}
+        />
+      )}
 
       {/* Main Content Area */}
       <main style={{ flex: 1 }}>

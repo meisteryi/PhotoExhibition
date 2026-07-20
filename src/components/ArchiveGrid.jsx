@@ -92,19 +92,20 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
                   borderRadius: '6px',
                   cursor: 'pointer',
                   background: 'var(--bg-secondary)',
-                  border: '1px solid rgba(255, 255, 255, 0.03)',
-                  boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)'
+                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                  boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
                 }}
               >
                 {/* Photo Image */}
                 <img
                   src={photo.url}
                   alt={photo.title}
-                  loading="lazy"
                   style={{
                     width: '100%',
                     display: 'block',
-                    transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
+                    transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                    transform: 'translate3d(0,0,0)',
+                    backfaceVisibility: 'hidden'
                   }}
                   className="grid-image"
                 />
@@ -118,7 +119,7 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: 'linear-gradient(to top, rgba(8, 11, 17, 0.9) 0%, rgba(8, 11, 17, 0.3) 60%, rgba(8, 11, 17, 0) 100%)',
+                    background: 'linear-gradient(to top, rgba(246, 245, 240, 0.96) 0%, rgba(246, 245, 240, 0.6) 60%, rgba(246, 245, 240, 0) 100%)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'flex-end',
@@ -145,7 +146,7 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
                       }}>
                         {photo.title}
                       </h3>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', opacity: 0.8 }}>
                         {photo.date}
                       </span>
                     </div>
@@ -157,10 +158,10 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
                       gap: '0.3rem',
                       color: isLiked ? 'var(--accent)' : 'var(--text-secondary)',
                       fontSize: '0.8rem',
-                      background: 'rgba(255, 255, 255, 0.05)',
+                      background: 'rgba(0, 0, 0, 0.03)',
                       padding: '0.3rem 0.6rem',
                       borderRadius: '12px',
-                      border: '1px solid rgba(255, 255, 255, 0.04)'
+                      border: '1px solid rgba(0, 0, 0, 0.06)'
                     }}>
                       <Heart size={12} fill={isLiked ? 'var(--accent)' : 'none'} />
                       <span style={{ fontWeight: 500 }}>{photo.hearts}</span>
@@ -187,9 +188,14 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
           transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease;
         }
 
+        .grid-image {
+          will-change: transform;
+          backface-visibility: hidden;
+        }
+
         .masonry-item:hover {
           transform: translateY(-4px);
-          border-color: rgba(255, 255, 255, 0.1);
+          border-color: rgba(0, 0, 0, 0.12);
         }
 
         .masonry-item:hover .grid-image {
@@ -217,7 +223,7 @@ export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
           }
           .grid-overlay {
             opacity: 1 !important; /* Always visible on mobile touch */
-            background: linear-gradient(to top, rgba(8, 11, 17, 0.95) 0%, rgba(8, 11, 17, 0.4) 70%, rgba(8, 11, 17, 0) 100%) !important;
+            background: linear-gradient(to top, rgba(246, 245, 240, 0.98) 0%, rgba(246, 245, 240, 0.55) 70%, rgba(246, 245, 240, 0) 100%) !important;
           }
         }
       `}</style>

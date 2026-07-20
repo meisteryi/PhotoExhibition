@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 
 :root {
-  /* Color Palette */
-  --bg-primary: #080b11;
-  --bg-secondary: #111622;
-  --bg-tertiary: #1a2030;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #475569;
-  --accent: #f43f5e;
-  --accent-glow: rgba(244, 63, 94, 0.15);
+  /* Color Palette - Warm Ivory / Off-White Editorial */
+  --bg-primary: #f6f5f0;      /* Warm Ivory */
+  --bg-secondary: #ffffff;    /* Pure White */
+  --bg-tertiary: #eae8e1;     /* Darker Ivory for borders/accent */
+  --text-primary: #1c1917;    /* Deep Charcoal */
+  --text-secondary: #57534e;  /* Muted Charcoal */
+  --text-muted: #a8a29e;      /* Beige Grey */
+  --accent: #e11d48;          /* Rose Red */
+  --accent-glow: rgba(225, 29, 72, 0.08);
   
   /* Fonts */
   --font-serif: 'Cormorant Garamond', 'Noto Serif KR', serif;
@@ -34,6 +34,9 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent flickering on state changes / GPU acceleration */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 button {
@@ -63,15 +66,15 @@ button {
 
 /* Glassmorphism Classes */
 .glass-panel {
-  background: rgba(17, 22, 34, 0.7);
+  background: rgba(250, 248, 245, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   color: var(--text-primary);
   border-radius: 4px;
   padding: 8px 12px;
@@ -80,7 +83,7 @@ button {
 .glass-input:focus {
   outline: none;
   border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 /* Keyframe Animations */
@@ -107,8 +110,16 @@ button {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    filter: blur(8px);
+    transform: scale(0.98) translateY(15px); 
+  }
+  to { 
+    opacity: 1; 
+    filter: blur(0);
+    transform: scale(1) translateY(0); 
+  }
 }
 
 .pulse-animation {
@@ -116,7 +127,7 @@ button {
 }
 
 .fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Heart Particle System */
