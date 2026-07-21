@@ -14,6 +14,7 @@ export default function App() {
   const [selectedPhotoId, setSelectedPhotoId] = useState(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isManagerOpen, setIsManagerOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('전체');
 
   // Initialize data from LocalStorage or Default Mock Data
   useEffect(() => {
@@ -119,6 +120,10 @@ export default function App() {
     setSelectedPhotoId(null);
   };
 
+  const filteredPhotos = activeCategory === '전체'
+    ? photos
+    : photos.filter(p => p.series === activeCategory);
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Site Header */}
@@ -138,10 +143,12 @@ export default function App() {
             photos={photos}
             onSelectPhoto={handleSelectPhoto}
             likedPhotos={likedPhotos}
+            activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
           />
         ) : (
           <MonographView
-            photos={photos}
+            photos={filteredPhotos}
             onLike={handleLike}
             likedPhotos={likedPhotos}
             selectedPhotoId={selectedPhotoId}

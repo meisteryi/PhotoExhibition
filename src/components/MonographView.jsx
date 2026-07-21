@@ -129,9 +129,24 @@ export default function MonographView({
         </svg>
       </button>
 
-      {/* Full-Screen Slides Container */}
       <div ref={containerRef} className="slides-container">
-        {photos.map((photo, index) => {
+        {photos.length === 0 ? (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100vw',
+            height: '100vh',
+            color: 'var(--text-secondary)',
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1.2rem',
+            fontStyle: 'italic'
+          }}>
+            이 시리즈에 등록된 사진이 없습니다.
+          </div>
+        ) : (
+          photos.map((photo, index) => {
           const isLiked = likedPhotos.includes(photo.id);
           const showBigHeart = doubleTapStates[photo.id];
           const isOverlayOpen = activeOverlayId === photo.id;
@@ -262,84 +277,86 @@ export default function MonographView({
               </div>
             </section>
           );
-        })}
+        })
+      )}
       </div>
 
-      {/* Fixed up/down navigation buttons (PC/Landscape only) */}
-      <div className="navigation-controls" style={{
-        position: 'fixed',
-        bottom: '2.5rem',
-        right: '2.5rem',
-        zIndex: 100,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem'
-      }}>
-        <button
-          onClick={() => handleScrollNav('up')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-secondary)',
-            background: 'rgba(255, 255, 255, 0.4)',
-            border: '1px solid rgba(0, 0, 0, 0.05)',
-            borderRadius: '50%',
-            width: '42px',
-            height: '42px',
-            cursor: 'pointer',
-            transition: 'var(--transition-fast)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--text-primary)';
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)';
-            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--text-secondary)';
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.4)';
-            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
-          }}
-          title="이전 사진"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="18 15 12 9 6 15"></polyline>
-          </svg>
-        </button>
-        <button
-          onClick={() => handleScrollNav('down')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-secondary)',
-            background: 'rgba(255, 255, 255, 0.4)',
-            border: '1px solid rgba(0, 0, 0, 0.05)',
-            borderRadius: '50%',
-            width: '42px',
-            height: '42px',
-            cursor: 'pointer',
-            transition: 'var(--transition-fast)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--text-primary)';
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)';
-            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--text-secondary)';
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.4)';
-            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
-          }}
-          title="다음 사진"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
-      </div>
+      {photos.length > 1 && (
+        <div className="navigation-controls" style={{
+          position: 'fixed',
+          bottom: '2.5rem',
+          right: '2.5rem',
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem'
+        }}>
+          <button
+            onClick={() => handleScrollNav('up')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-secondary)',
+              background: 'rgba(255, 255, 255, 0.4)',
+              border: '1px solid rgba(0, 0, 0, 0.05)',
+              borderRadius: '50%',
+              width: '42px',
+              height: '42px',
+              cursor: 'pointer',
+              transition: 'var(--transition-fast)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)';
+              e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.4)';
+              e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
+            }}
+            title="이전 사진"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+          </button>
+          <button
+            onClick={() => handleScrollNav('down')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-secondary)',
+              background: 'rgba(255, 255, 255, 0.4)',
+              border: '1px solid rgba(0, 0, 0, 0.05)',
+              borderRadius: '50%',
+              width: '42px',
+              height: '42px',
+              cursor: 'pointer',
+              transition: 'var(--transition-fast)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)';
+              e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.4)';
+              e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
+            }}
+            title="다음 사진"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Responsive layout CSS overrides specifically for PC/Landscape centered galleries */}
       <style>{`

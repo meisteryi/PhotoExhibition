@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
 
-export default function ArchiveGrid({ photos, onSelectPhoto, likedPhotos }) {
-  const [activeCategory, setActiveCategory] = useState('전체');
+export default function ArchiveGrid({ 
+  photos, 
+  onSelectPhoto, 
+  likedPhotos, 
+  activeCategory, 
+  setActiveCategory 
+}) {
 
   // Dynamically extract categories (series)
   const categories = ['전체', ...new Set(photos.map(p => p.series))];
