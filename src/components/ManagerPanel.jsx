@@ -7,10 +7,19 @@ export default function ManagerPanel({
   photos = [],
   onDeletePhoto,
   onRenameCategory,
-  onDeleteCategory
+  onDeleteCategory,
+  categories = [],
+  onAddCategory
 }) {
   const [editingCategory, setEditingCategory] = useState(null);
   const [editCategoryVal, setEditCategoryVal] = useState('');
+  const [newCatInput, setNewCatInput] = useState('');
+
+  const handleAddClick = () => {
+    if (!newCatInput.trim()) return;
+    onAddCategory(newCatInput.trim());
+    setNewCatInput('');
+  };
 
   // Handle Esc key press to close modal
   useEffect(() => {
@@ -126,9 +135,40 @@ export default function ManagerPanel({
               시리즈(카테고리) 관리
             </h3>
             
+            {/* Add Category Form */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <input
+                type="text"
+                value={newCatInput}
+                onChange={(e) => setNewCatInput(e.target.value)}
+                placeholder="새 시리즈 이름 입력"
+                className="glass-input"
+                style={{ flex: 1, padding: '6px 12px', fontSize: '0.85rem' }}
+              />
+              <button
+                type="button"
+                onClick={handleAddClick}
+                style={{
+                  padding: '0.4rem 1.25rem',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  color: 'white',
+                  background: 'var(--accent)',
+                  border: 'none',
+                  transition: 'var(--transition-fast)',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.filter = 'none'}
+              >
+                추가
+              </button>
+            </div>
+
             {/* Category List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '180px', overflowY: 'auto', paddingRight: '0.5rem', marginBottom: '1rem' }}>
-              {[...new Set(photos.map(p => p.series))].filter(Boolean).map((cat) => (
+              {categories.filter(Boolean).map((cat) => (
                 <div
                   key={cat}
                   style={{

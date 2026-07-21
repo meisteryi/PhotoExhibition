@@ -211,7 +211,7 @@ export default function DetailModal({ photo, likedPhotos, onLike, onClose }) {
             marginBottom: '1.5rem',
             paddingRight: '0.5rem'
           }}
-          className="story-scroll-area"
+            className="story-scroll-area"
           >
             {photo.story}
           </div>

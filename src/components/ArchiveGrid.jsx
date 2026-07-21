@@ -6,11 +6,9 @@ export default function ArchiveGrid({
   onSelectPhoto, 
   likedPhotos, 
   activeCategory, 
-  setActiveCategory 
+  setActiveCategory,
+  categories = []
 }) {
-
-  // Dynamically extract categories (series)
-  const categories = ['전체', ...new Set(photos.map(p => p.series))];
 
   // Filter photos based on category
   const filteredPhotos = activeCategory === '전체'
@@ -20,15 +18,22 @@ export default function ArchiveGrid({
   return (
     <div className="fade-in container" style={{ paddingBottom: '8rem' }}>
       {/* Category Navigation (Minimalist Serif Links) */}
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '2.5rem',
-        marginBottom: '3.5rem',
-        flexWrap: 'wrap',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
-        paddingBottom: '1rem'
-      }}>
+      <nav 
+        className="category-scroll-nav"
+        style={{
+          display: 'flex',
+          gap: '2.5rem',
+          marginBottom: '3.5rem',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
+          paddingBottom: '1rem',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+          paddingLeft: '1.5rem',
+          paddingRight: '1.5rem'
+        }}
+      >
         {categories.map((category) => {
           const isActive = activeCategory === category;
           return (
@@ -43,7 +48,9 @@ export default function ArchiveGrid({
                 opacity: isActive ? 1 : 0.5,
                 transition: 'var(--transition-fast)',
                 padding: '0.5rem 0',
-                position: 'relative'
+                position: 'relative',
+                flexShrink: 0,
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={(e) => {
                 if (!isActive) e.currentTarget.style.opacity = 0.85;
@@ -181,6 +188,18 @@ export default function ArchiveGrid({
 
       {/* Embedded CSS for Masonry grid responsiveness and image hover scale */}
       <style>{`
+        .category-scroll-nav {
+          justify-content: center;
+        }
+        .category-scroll-nav::-webkit-scrollbar {
+          display: none;
+        }
+        @media (max-width: 1024px) {
+          .category-scroll-nav {
+            justify-content: flex-start;
+          }
+        }
+
         .masonry-grid {
           column-count: 3;
           column-gap: 2rem;

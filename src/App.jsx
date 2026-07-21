@@ -15,14 +15,16 @@ export default function App() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isManagerOpen, setIsManagerOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('전체');
+  const [customCategories, setCustomCategories] = useState([]);
 
   // Initialize data from LocalStorage or Default Mock Data
   useEffect(() => {
     const savedPhotos = localStorage.getItem('photo_exhibition_photos');
+    let loadedPhotos = defaultPhotos;
     if (savedPhotos) {
-      let parsed = JSON.parse(savedPhotos);
+      loadedPhotos = JSON.parse(savedPhotos);
       // Hotfix: Update photo-1's URL if it's the old broken Unsplash link
-      parsed = parsed.map(p => {
+      loadedPhotos = loadedPhotos.map(p => {
         if (p.id === 'photo-1' && p.url.includes('1472214222541-d510753a4707')) {
           return {
             ...p,
@@ -31,11 +33,20 @@ export default function App() {
         }
         return p;
       });
-      setPhotos(parsed);
-      localStorage.setItem('photo_exhibition_photos', JSON.stringify(parsed));
+      setPhotos(loadedPhotos);
+      localStorage.setItem('photo_exhibition_photos', JSON.stringify(loadedPhotos));
     } else {
       setPhotos(defaultPhotos);
       localStorage.setItem('photo_exhibition_photos', JSON.stringify(defaultPhotos));
+    }
+
+    const savedCats = localStorage.getItem('photo_exhibition_categories');
+    if (savedCats) {
+      setCustomCategories(JSON.parse(savedCats));
+    } else {
+      const derivedCats = [...new Set(loadedPhotos.map(p => p.series))].filter(Boolean);
+      setCustomCategories(derivedCats);
+      localStorage.setItem('photo_exhibition_categories', JSON.stringify(derivedCats));
     }
 
     const savedLikes = localStorage.getItem('photo_exhibition_likes');
@@ -84,6 +95,12 @@ export default function App() {
     const updatedPhotos = [newPhoto, ...photos]; // Prepend new photo to the front
     setPhotos(updatedPhotos);
     localStorage.setItem('photo_exhibition_photos', JSON.stringify(updatedPhotos));
+
+    if (newPhoto.series && !customCategories.includes(newPhoto.series)) {
+      const updatedCats = [...customCategories, newPhoto.series];
+      setCustomCategories(updatedCats);
+      localStorage.setItem('photo_exhibition_categories', JSON.stringify(updatedCats));
+    }
   };
 
   const handleDeletePhoto = (photoId) => {
@@ -94,20 +111,67 @@ export default function App() {
     }
   };
 
+  const handleAddCategory = (newCatName) => {
+    const trimmed = newCatName.trim();
+    if (!trimmed) return;
+    if (customCategories.includes(trimmed)) {
+      alert("이미 존재하는 카테고리입니다.");
+      return;
+    }
+    const updatedCats = [...customCategories, trimmed];
+    setCustomCategories(updatedCats);
+    localStorage.setItem('photo_exhibition_categories', JSON.stringify(updatedCats));
+  };
+
   const handleRenameCategory = (oldName, newName) => {
+    const trimmedNew = newName.trim();
+    if (!trimmedNew || oldName === trimmedNew) return;
+
+    // Update categories list
+    const updatedCats = customCategories.map(c => c === oldName ? trimmedNew : c);
+    setCustomCategories(updatedCats);
+    localStorage.setItem('photo_exhibition_categories', JSON.stringify(updatedCats));
+
+    // Update photos
     const updatedPhotos = photos.map(p => {
       if (p.series === oldName) {
-        return { ...p, series: newName || '미분류' };
+        return { ...p, series: trimmedNew };
       }
       return p;
     });
     setPhotos(updatedPhotos);
     localStorage.setItem('photo_exhibition_photos', JSON.stringify(updatedPhotos));
+
+    // Adjust activeCategory if renamed
+    if (activeCategory === oldName) {
+      setActiveCategory(trimmedNew);
+    }
   };
 
   const handleDeleteCategory = (categoryName) => {
     if (window.confirm(`'${categoryName}' 카테고리를 삭제하시겠습니까? 소속된 사진들은 '미분류'로 이동합니다.`)) {
-      handleRenameCategory(categoryName, '미분류');
+      // Update categories list
+      const updatedCats = customCategories.filter(c => c !== categoryName);
+      if (!updatedCats.includes('미분류') && photos.some(p => p.series === categoryName)) {
+        updatedCats.push('미분류');
+      }
+      setCustomCategories(updatedCats);
+      localStorage.setItem('photo_exhibition_categories', JSON.stringify(updatedCats));
+
+      // Update photos
+      const updatedPhotos = photos.map(p => {
+        if (p.series === categoryName) {
+          return { ...p, series: '미분류' };
+        }
+        return p;
+      });
+      setPhotos(updatedPhotos);
+      localStorage.setItem('photo_exhibition_photos', JSON.stringify(updatedPhotos));
+
+      // Reset activeCategory if deleted
+      if (activeCategory === categoryName) {
+        setActiveCategory('전체');
+      }
     }
   };
 
@@ -145,6 +209,7 @@ export default function App() {
             likedPhotos={likedPhotos}
             activeCategory={activeCategory}
             setActiveCategory={setActiveCategory}
+            categories={['전체', ...customCategories]}
           />
         ) : (
           <MonographView
@@ -172,7 +237,7 @@ export default function App() {
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
         onUpload={handleUpload}
-        existingSeries={['전체', ...new Set(photos.map(p => p.series))]}
+        existingSeries={['전체', ...customCategories]}
       />
 
       {/* Category & Content Manager Modal */}
@@ -183,6 +248,8 @@ export default function App() {
         onDeletePhoto={handleDeletePhoto}
         onRenameCategory={handleRenameCategory}
         onDeleteCategory={handleDeleteCategory}
+        categories={customCategories}
+        onAddCategory={handleAddCategory}
       />
 
       {/* Footer */}
