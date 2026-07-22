@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Upload } from 'lucide-react';
+import ExifReader from 'exifreader';
 
 export default function UploadPanel({ isOpen, onClose, onUpload, existingSeries = [] }) {
   const [title, setTitle] = useState('');
@@ -12,20 +13,36 @@ export default function UploadPanel({ isOpen, onClose, onUpload, existingSeries 
   const [imagePreview, setImagePreview] = useState('');
 
   // EXIF states
-  const [camera, setCamera] = useState('Fujifilm X-T5');
-  const [lens, setLens] = useState('XF 35mm F1.4 R');
-  const [aperture, setAperture] = useState('f/1.4');
-  const [shutter, setShutter] = useState('1/250s');
-  const [iso, setIso] = useState('ISO 400');
-  const [location, setLocation] = useState('Seoul, South Korea');
+  const [camera, setCamera] = useState('');
+  const [lens, setLens] = useState('');
+  const [aperture, setAperture] = useState('');
+  const [shutter, setShutter] = useState('');
+  const [iso, setIso] = useState('');
+  const [location, setLocation] = useState('');
 
-  // Set default date as today
+  // Set default date as today and reset form states on open
   useEffect(() => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    setDate(`${yyyy}. ${mm}. ${dd}`);
+    if (isOpen) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      setDate(`${yyyy}. ${mm}. ${dd}`);
+
+      // Reset all inputs to a fresh state when modal is opened
+      setTitle('');
+      setStory('');
+      setImageFile(null);
+      setImagePreview('');
+      setIsAddingNewSeries(false);
+      setNewSeriesName('');
+      setCamera('');
+      setLens('');
+      setAperture('');
+      setShutter('');
+      setIso('');
+      setLocation('');
+    }
   }, [isOpen]);
 
   // Handle Esc key press to close modal
@@ -51,7 +68,7 @@ export default function UploadPanel({ isOpen, onClose, onUpload, existingSeries 
     };
   }, [isOpen]);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
@@ -60,6 +77,69 @@ export default function UploadPanel({ isOpen, onClose, onUpload, existingSeries 
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
+
+      try {
+        const tags = await ExifReader.load(file);
+
+        // Extract Camera Body
+        const make = tags.Make?.description !== undefined ? String(tags.Make.description) : '';
+        const model = tags.Model?.description !== undefined ? String(tags.Model.description) : '';
+        let cameraBody = model;
+        if (make && !model.toLowerCase().includes(make.toLowerCase())) {
+          cameraBody = `${make} ${model}`;
+        }
+        if (cameraBody) setCamera(cameraBody.trim());
+
+        // Extract Lens
+        const lensModel = tags.LensModel?.description !== undefined ? String(tags.LensModel.description) : (tags.Lens?.description !== undefined ? String(tags.Lens.description) : '');
+        if (lensModel) setLens(lensModel.trim());
+
+        // Extract Aperture
+        let fNumber = tags.FNumber?.description !== undefined ? String(tags.FNumber.description) : '';
+        if (fNumber) {
+          if (!fNumber.startsWith('f/')) {
+            fNumber = `f/${fNumber}`;
+          }
+          setAperture(fNumber);
+        }
+
+        // Extract Shutter Speed (ExposureTime)
+        let exposureTime = tags.ExposureTime?.description !== undefined ? String(tags.ExposureTime.description) : '';
+        if (exposureTime) {
+          if (!exposureTime.endsWith('s')) {
+            exposureTime = `${exposureTime}s`;
+          }
+          setShutter(exposureTime);
+        }
+
+        // Extract ISO
+        let isoSpeed = tags.ISOSpeedRatings?.description !== undefined ? String(tags.ISOSpeedRatings.description) : (tags.ISO?.description !== undefined ? String(tags.ISO.description) : '');
+        if (isoSpeed) {
+          if (!isoSpeed.startsWith('ISO ')) {
+            isoSpeed = `ISO ${isoSpeed}`;
+          }
+          setIso(isoSpeed);
+        }
+
+        // Extract Location from IPTC/XMP tags if available
+        const city = tags.City?.description !== undefined ? String(tags.City.description) : '';
+        const country = tags.Country?.description !== undefined ? String(tags.Country.description) : (tags['Country-PrimaryLocationName']?.description !== undefined ? String(tags['Country-PrimaryLocationName'].description) : '');
+        if (city || country) {
+          const locStr = [city, country].filter(Boolean).join(', ');
+          setLocation(locStr);
+        }
+
+        // Extract Date
+        const dateRaw = tags.DateTimeOriginal?.description !== undefined ? String(tags.DateTimeOriginal.description) : (tags.DateTime?.description !== undefined ? String(tags.DateTime.description) : (tags.CreateDate?.description !== undefined ? String(tags.CreateDate.description) : ''));
+        if (dateRaw) {
+          const match = dateRaw.match(/^(\d{4})[.:/](\d{2})[.:/](\d{2})/);
+          if (match) {
+            setDate(`${match[1]}. ${match[2]}. ${match[3]}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing EXIF metadata:', error);
+      }
     }
   };
 
@@ -104,6 +184,12 @@ export default function UploadPanel({ isOpen, onClose, onUpload, existingSeries 
     setImagePreview('');
     setIsAddingNewSeries(false);
     setNewSeriesName('');
+    setCamera('');
+    setLens('');
+    setAperture('');
+    setShutter('');
+    setIso('');
+    setLocation('');
     onClose();
   };
 
