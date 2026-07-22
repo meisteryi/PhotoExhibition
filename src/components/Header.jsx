@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Header({ viewMode, setViewMode, onOpenUpload, onOpenManage }) {
+export default function Header({ viewMode, setViewMode, onOpenUpload, onOpenManage, isAdminMode, onVerifyAdmin }) {
   return (
     <header className="glass-panel" style={{
       position: 'sticky',
@@ -23,6 +23,7 @@ export default function Header({ viewMode, setViewMode, onOpenUpload, onOpenMana
         <div>
           <h1 
             onClick={() => setViewMode('archive')}
+            onDoubleClick={onVerifyAdmin}
             style={{
               fontFamily: 'var(--font-serif)',
               fontSize: '1.25rem',
@@ -31,10 +32,23 @@ export default function Header({ viewMode, setViewMode, onOpenUpload, onOpenMana
               textTransform: 'uppercase',
               color: 'var(--text-primary)',
               cursor: 'pointer',
-              margin: 0
+              margin: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem'
             }}
+            title={isAdminMode ? "더블 클릭하여 로그아웃" : "더블 클릭하여 관리자 로그인"}
           >
             YJH ARCHIVE
+            {isAdminMode && (
+              <span style={{
+                width: '5px',
+                height: '5px',
+                backgroundColor: 'var(--accent)',
+                borderRadius: '50%',
+                display: 'inline-block'
+              }} />
+            )}
           </h1>
         </div>
 
@@ -82,65 +96,67 @@ export default function Header({ viewMode, setViewMode, onOpenUpload, onOpenMana
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid rgba(0,0,0,0.06)', paddingLeft: '1rem' }}>
-            {/* Admin Upload Trigger */}
-            <button
-              onClick={onOpenUpload}
-              style={{
-                padding: '0.4rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--text-primary)',
-                opacity: 0.4,
-                cursor: 'pointer',
-                transition: 'opacity 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.opacity = 0.85}
-              onMouseLeave={(e) => e.currentTarget.style.opacity = 0.4}
-              title="기록 업로드"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-            </button>
+          {isAdminMode && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid rgba(0,0,0,0.06)', paddingLeft: '1rem' }}>
+              {/* Admin Upload Trigger */}
+              <button
+                onClick={onOpenUpload}
+                style={{
+                  padding: '0.4rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-primary)',
+                  opacity: 0.4,
+                  cursor: 'pointer',
+                  transition: 'opacity 0.3s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = 0.85}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = 0.4}
+                title="기록 업로드"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+              </button>
 
-            {/* Admin Manage Trigger */}
-            <button
-              onClick={onOpenManage}
-              style={{
-                padding: '0.4rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--text-primary)',
-                opacity: 0.4,
-                cursor: 'pointer',
-                transition: 'opacity 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.opacity = 0.85}
-              onMouseLeave={(e) => e.currentTarget.style.opacity = 0.4}
-              title="기록 및 카테고리 관리"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="4" y1="21" x2="4" y2="14" />
-                <line x1="4" y1="10" x2="4" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12" y2="3" />
-                <line x1="20" y1="21" x2="20" y2="16" />
-                <line x1="20" y1="12" x2="20" y2="3" />
-                <line x1="1" y1="14" x2="7" y2="14" />
-                <line x1="9" y1="8" x2="15" y2="8" />
-                <line x1="17" y1="16" x2="23" y2="16" />
-              </svg>
-            </button>
-          </div>
+              {/* Admin Manage Trigger */}
+              <button
+                onClick={onOpenManage}
+                style={{
+                  padding: '0.4rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-primary)',
+                  opacity: 0.4,
+                  cursor: 'pointer',
+                  transition: 'opacity 0.3s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = 0.85}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = 0.4}
+                title="기록 및 카테고리 관리"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="21" x2="4" y2="14" />
+                  <line x1="4" y1="10" x2="4" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12" y2="3" />
+                  <line x1="20" y1="21" x2="20" y2="16" />
+                  <line x1="20" y1="12" x2="20" y2="3" />
+                  <line x1="1" y1="14" x2="7" y2="14" />
+                  <line x1="9" y1="8" x2="15" y2="8" />
+                  <line x1="17" y1="16" x2="23" y2="16" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

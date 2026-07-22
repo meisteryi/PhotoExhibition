@@ -16,6 +16,9 @@ export default function App() {
   const [isManagerOpen, setIsManagerOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('전체');
   const [customCategories, setCustomCategories] = useState([]);
+  const [isAdminMode, setIsAdminMode] = useState(() => {
+    return sessionStorage.getItem('photo_exhibition_admin') === 'true';
+  });
 
   // Initialize data from LocalStorage or Default Mock Data
   useEffect(() => {
@@ -184,6 +187,23 @@ export default function App() {
     setSelectedPhotoId(null);
   };
 
+  const handleVerifyAdmin = () => {
+    if (isAdminMode) {
+      if (window.confirm("관리자 모드를 로그아웃 하시겠습니까?")) {
+        setIsAdminMode(false);
+        sessionStorage.removeItem('photo_exhibition_admin');
+      }
+    } else {
+      const pass = prompt("관리자 비밀번호를 입력하세요 (기본값: admin):");
+      if (pass === "admin") {
+        setIsAdminMode(true);
+        sessionStorage.setItem('photo_exhibition_admin', 'true');
+      } else if (pass !== null) {
+        alert("비밀번호가 틀렸습니다.");
+      }
+    }
+  };
+
   const filteredPhotos = activeCategory === '전체'
     ? photos
     : photos.filter(p => p.series === activeCategory);
@@ -197,6 +217,8 @@ export default function App() {
           setViewMode={setViewMode}
           onOpenUpload={() => setIsUploadOpen(true)}
           onOpenManage={() => setIsManagerOpen(true)}
+          isAdminMode={isAdminMode}
+          onVerifyAdmin={handleVerifyAdmin}
         />
       )}
 
